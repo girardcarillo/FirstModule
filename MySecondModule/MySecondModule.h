@@ -33,6 +33,10 @@ public:
   //! Process supplied data record
   virtual dpp::base_module::process_status process(datatools::things& workItem);
 
+  //functions
+  double g_EnergyCut (double energy_sum, double energy_max, double energy_min);
+
+
   //! Reset the module
   virtual void reset();
 

@@ -24,6 +24,21 @@
 
 #include <fstream>
 
+// function definition
+double g_EnergyCut (double energy_sum, double energy_max, double energy_min) {
+  if (energy_sum/CLHEP::MeV > energy_min
+      && energy_sum/CLHEP::MeV < energy_max) {
+    _number_of_internal_conversion_events_++;
+    std::cout<<"number of internal conversion events"<<_number_of_internal_conversion_events_<<std::endl;
+    if (_the_time_difference_ != 0) {
+      _sd_output_file_->cd();
+      _time_= _the_time_difference_/CLHEP::picosecond;//Fill a root file with the SD times for a 2e pattern
+      _sd_tree_->Fill();
+      _on_exponential_++;
+    }
+  }
+}
+
 DPP_MODULE_REGISTRATION_IMPLEMENT(MySecondModule,"MySecondModule")
 
 // Construct
@@ -108,17 +123,21 @@ MySecondModule::process(datatools::things& data_record_) {
           DT_LOG_DEBUG(get_logging_priority(), "The TD has a 2e pattern");
 
           //Energy cut
-          if (a_energy_sum/CLHEP::MeV > 2.7
-              && a_energy_sum/CLHEP::MeV < 3.2) {
-            _number_of_internal_conversion_events_++;
-            std::cout<<"number of internal conversion events"<<_number_of_internal_conversion_events_<<std::endl;
-            if (_the_time_difference_ != 0) {
-              _sd_output_file_->cd();
-              _time_= _the_time_difference_/CLHEP::picosecond;//Fill a root file with the SD times for a 2e pattern
-              _sd_tree_->Fill();
-              _on_exponential_++;
-            }
-          }
+          //with g_EnergyCut function
+          g_EnergyCut(a_energy_sum, 2.7, 3.2);
+
+          //without g_EnergyCut function
+          // if (a_energy_sum/CLHEP::MeV > 2.7
+          //     && a_energy_sum/CLHEP::MeV < 3.2) {
+          //   _number_of_internal_conversion_events_++;
+          //   std::cout<<"number of internal conversion events"<<_number_of_internal_conversion_events_<<std::endl;
+          //   if (_the_time_difference_ != 0) {
+          //     _sd_output_file_->cd();
+          //     _time_= _the_time_difference_/CLHEP::picosecond;//Fill a root file with the SD times for a 2e pattern
+          //     _sd_tree_->Fill();
+          //     _on_exponential_++;
+          //   }
+          // }
         }
         else {
           if (a_energy_sum/CLHEP::MeV > 2.7
